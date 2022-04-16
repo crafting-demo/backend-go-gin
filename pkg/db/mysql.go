@@ -10,7 +10,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type MySQLConfig struct {
+type ConfigMySQL struct {
 	// MySQL user
 	User string
 
@@ -28,8 +28,8 @@ type MySQLConfig struct {
 }
 
 // New returns a new mysql connection.
-func (c *MySQLConfig) New() (*sql.DB, error) {
-	if err := c.SetupMySQLConfig(); err != nil {
+func (c *ConfigMySQL) New() (*sql.DB, error) {
+	if err := c.SetupConfig(); err != nil {
 		return nil, err
 	}
 	db, err := sql.Open("mysql", c.DataSourceName())
@@ -43,8 +43,8 @@ func (c *MySQLConfig) New() (*sql.DB, error) {
 	return db, nil
 }
 
-// SetupMySQLConfig updates mysqlConf using environment variables.
-func (c *MySQLConfig) SetupMySQLConfig() error {
+// SetupConfig populates mysql config using environment variables.
+func (c *ConfigMySQL) SetupConfig() error {
 	// set user
 	c.User = "brucewayne"
 
@@ -52,7 +52,7 @@ func (c *MySQLConfig) SetupMySQLConfig() error {
 	c.Pass = "batman"
 
 	// set database
-	c.DB = "superhero"
+	c.DB = "demo"
 
 	// set host
 	if c.Host = os.Getenv("MYSQL_SERVICE_HOST"); c.Host == "" {
@@ -68,6 +68,6 @@ func (c *MySQLConfig) SetupMySQLConfig() error {
 }
 
 // DataSourceName returns a connection string suitable for sql.Open.
-func (c *MySQLConfig) DataSourceName() string {
+func (c *ConfigMySQL) DataSourceName() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", c.User, c.Pass, c.Host, c.Port, c.DB)
 }
