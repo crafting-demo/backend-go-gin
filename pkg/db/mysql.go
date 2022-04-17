@@ -11,19 +11,19 @@ import (
 )
 
 type ConfigMySQL struct {
-	// MySQL user
+	// User
 	User string
 
-	// MySQL password
+	// Password
 	Pass string
 
-	// MySQL database
+	// Database
 	DB string
 
-	// MySQL host
+	// Host
 	Host string
 
-	// MySQL port
+	// Port
 	Port string
 }
 
