@@ -1,6 +1,9 @@
 package api
 
 import (
+	"encoding/json"
+
+	"github.com/crafting-demo/backend-go-gin/pkg/queue"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -38,4 +41,16 @@ func Init(ctx Context) {
 
 	// Listen and serve on 0.0.0.0:PORT
 	router.Run(":" + ctx.Port)
+
+	var listener queue.Consumer
+	msgCh := make(chan []byte)
+	go listener.Run(queue.GoGin, msgCh)
+	for {
+		m := <-msgCh
+		if len(m) > 0 {
+			var msg queue.Message
+			json.Unmarshal(m, &msg)
+			HandleMessage(msg)
+		}
+	}
 }

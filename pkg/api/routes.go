@@ -17,5 +17,5 @@ type Route struct {
 type Routes []Route
 
 var routes = Routes{
-	Route{http.MethodGet, "/", nil},
+	Route{http.MethodPost, "/", Demo},
 }
