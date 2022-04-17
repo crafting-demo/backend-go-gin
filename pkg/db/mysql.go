@@ -32,14 +32,17 @@ func (c *ConfigMySQL) New() (*sql.DB, error) {
 	if err := c.SetupConfig(); err != nil {
 		return nil, err
 	}
+
 	db, err := sql.Open("mysql", c.DataSourceName())
 	if err != nil {
 		return nil, err
 	}
+
 	if err = db.Ping(); err != nil {
 		db.Close()
 		return nil, err
 	}
+
 	return db, nil
 }
 
