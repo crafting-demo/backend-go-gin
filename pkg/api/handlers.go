@@ -14,9 +14,9 @@ func DemoHandler(c *gin.Context) {
 }
 
 func QueueHandler() {
-	var listener queue.Consumer
+	var consumer queue.Consumer
 	msgCh := make(chan []byte)
-	go listener.Run(queue.GoGin, msgCh)
+	go consumer.Run(queue.GoGin, msgCh)
 	for {
 		m := <-msgCh
 		if len(m) > 0 {

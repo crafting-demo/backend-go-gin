@@ -9,6 +9,8 @@ import (
 	"github.com/crafting-demo/backend-go-gin/pkg/db"
 	"github.com/crafting-demo/backend-go-gin/pkg/queue"
 	"github.com/go-redis/redis/v8"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // HandleMessage processes a message action.
@@ -61,7 +63,7 @@ func Read(action queue.Action, meta queue.Meta) {
 	case db.Postgres:
 		value, err = postgresRead(key)
 	case db.MongoDB:
-		value, err = mongoRead()
+		value, err = mongoRead(key)
 	case db.DynamoDB:
 		value, err = dynamoRead()
 	case db.Redis:
@@ -98,7 +100,7 @@ func Write(action queue.Action, meta queue.Meta) {
 	case db.Postgres:
 		err = postgresWrite(key, value)
 	case db.MongoDB:
-		err = mongoWrite()
+		err = mongoWrite(key, value)
 	case db.DynamoDB:
 		err = dynamoWrite()
 	case db.Redis:
@@ -228,6 +230,68 @@ func postgresWrite(key string, value string) error {
 	return nil
 }
 
+func mongoRead(key string) (string, error) {
+	var config db.ConfigMongo
+	if err := config.SetupConfig(); err != nil {
+		return "", err
+	}
+
+	client, ctx, cancel, err := config.New()
+	if err != nil {
+		return "", err
+	}
+	defer cancel()
+	defer client.Disconnect(ctx)
+
+	collection := client.Database(db.DBName).Collection(db.Table)
+
+	var result struct {
+		Content string `bson:"content"`
+	}
+	filter := bson.D{{Key: "uuid", Value: key}}
+
+	err = collection.FindOne(ctx, filter).Decode(&result)
+	if err == mongo.ErrNoDocuments {
+		return "Not Found", nil
+	}
+	if err != nil {
+		return "", err
+	}
+
+	return result.Content, nil
+}
+
+func mongoWrite(key string, value string) error {
+	var config db.ConfigMongo
+	if err := config.SetupConfig(); err != nil {
+		return err
+	}
+
+	client, ctx, cancel, err := config.New()
+	if err != nil {
+		return err
+	}
+	defer cancel()
+	defer client.Disconnect(ctx)
+
+	collection := client.Database(db.DBName).Collection(db.Table)
+
+	_, err = collection.InsertOne(ctx, bson.D{{Key: "uuid", Value: key}, {Key: "content", Value: value}})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func dynamoRead() (string, error) {
+	return "", nil
+}
+
+func dynamoWrite() error {
+	return nil
+}
+
 func redisRead(key string) (string, error) {
 	var config db.ConfigRedis
 	if err := config.SetupConfig(); err != nil {
@@ -265,21 +329,5 @@ func redisWrite(key string, value string) error {
 		return err
 	}
 
-	return nil
-}
-
-func mongoRead() (string, error) {
-	return "", nil
-}
-
-func mongoWrite() error {
-	return nil
-}
-
-func dynamoRead() (string, error) {
-	return "", nil
-}
-
-func dynamoWrite() error {
 	return nil
 }
