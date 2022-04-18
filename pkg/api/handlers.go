@@ -7,12 +7,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DemoHandler(c *gin.Context) {
+// EndpointHandler handles messages from API endpoint.
+func EndpointHandler(c *gin.Context) {
 	var msg queue.Message
 	c.BindJSON(&msg)
 	ProcessMessage(msg)
 }
 
+// QueueHandler handles messages from broker queues.
 func QueueHandler() {
 	var consumer queue.Consumer
 	msgCh := make(chan []byte)

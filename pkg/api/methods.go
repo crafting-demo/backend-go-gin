@@ -8,7 +8,7 @@ import (
 	"github.com/crafting-demo/backend-go-gin/pkg/queue"
 )
 
-// ProcessMessage processes a message action.
+// ProcessMessage processes message actions.
 func ProcessMessage(msg queue.Message) {
 	for _, action := range msg.Actions {
 		switch action.Action {
