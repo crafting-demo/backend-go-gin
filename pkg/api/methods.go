@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/crafting-demo/backend-go-gin/pkg/db"
 	"github.com/crafting-demo/backend-go-gin/pkg/queue"
 	"github.com/go-redis/redis/v8"
@@ -65,7 +68,7 @@ func Read(action queue.Action, meta queue.Meta) {
 	case db.MongoDB:
 		value, err = mongoRead(key)
 	case db.DynamoDB:
-		value, err = dynamoRead()
+		value, err = dynamoRead(key)
 	case db.Redis:
 		value, err = redisRead(key)
 	}
@@ -102,7 +105,7 @@ func Write(action queue.Action, meta queue.Meta) {
 	case db.MongoDB:
 		err = mongoWrite(key, value)
 	case db.DynamoDB:
-		err = dynamoWrite()
+		err = dynamoWrite(key, value)
 	case db.Redis:
 		err = redisWrite(key, value)
 	}
@@ -246,6 +249,7 @@ func mongoRead(key string) (string, error) {
 	collection := client.Database(db.DBName).Collection(db.Table)
 
 	var result struct {
+		Uuid    string `bson:"uuid"`
 		Content string `bson:"content"`
 	}
 	filter := bson.D{{Key: "uuid", Value: key}}
@@ -284,11 +288,76 @@ func mongoWrite(key string, value string) error {
 	return nil
 }
 
-func dynamoRead() (string, error) {
-	return "", nil
+func dynamoRead(key string) (string, error) {
+	var config db.ConfigDynamo
+	if err := config.SetupConfig(); err != nil {
+		return "", err
+	}
+
+	conn, err := config.New()
+	if err != nil {
+		return "", err
+	}
+
+	filter := &dynamodb.GetItemInput{
+		TableName: aws.String(db.Table),
+		Key: map[string]*dynamodb.AttributeValue{
+			"uuid": {
+				S: aws.String(key),
+			},
+		},
+	}
+
+	result, err := conn.GetItem(filter)
+	if result.Item == nil {
+		return "Not Found", nil
+	}
+	if err != nil {
+		return "", err
+	}
+
+	var item struct {
+		Uuid    string `bson:"uuid"`
+		Content string `bson:"content"`
+	}
+
+	err = dynamodbattribute.UnmarshalMap(result.Item, &item)
+	if err != nil {
+		return "", err
+	}
+
+	return item.Content, nil
 }
 
-func dynamoWrite() error {
+func dynamoWrite(key string, value string) error {
+	var config db.ConfigDynamo
+	if err := config.SetupConfig(); err != nil {
+		return err
+	}
+
+	conn, err := config.New()
+	if err != nil {
+		return err
+	}
+
+	type item struct {
+		Uuid    string `bson:"uuid"`
+		Content string `bson:"content"`
+	}
+	av, err := dynamodbattribute.MarshalMap(item{Uuid: key, Content: value})
+	if err != nil {
+		return err
+	}
+
+	input := &dynamodb.PutItemInput{
+		Item:      av,
+		TableName: aws.String(db.Table),
+	}
+	_, err = conn.PutItem(input)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

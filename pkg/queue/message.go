@@ -2,24 +2,6 @@ package queue
 
 import "time"
 
-// Actions
-const (
-	Echo  = "Echo"
-	Read  = "Read"
-	Write = "Write"
-	Call  = "Call"
-)
-
-// Topics
-const (
-	TsReact      = "frontend-typescript-react"
-	GoGin        = "backend-go-gin"
-	TsExpress    = "backend-typescript-express"
-	RubyRails    = "backend-ruby-rails"
-	KotlinSpring = "backend-kotlin-spring"
-	PyDjango     = "backend-python-django"
-)
-
 type Message struct {
 	Meta    Meta     `json:"meta"`
 	Actions []Action `json:"actions"`
