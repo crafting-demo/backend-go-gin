@@ -2,20 +2,26 @@ package queue
 
 import (
 	"encoding/json"
+	"os"
 
 	"github.com/Shopify/sarama"
 )
 
 type Producer struct {
-	brokers []string
+	Brokers []string
 }
 
 // New returns a new kafka connection as a Producer.
 func (p *Producer) New() (sarama.AsyncProducer, error) {
+	if len(p.Brokers) == 0 {
+		host, port := os.Getenv("KAFKA_SERVICE_HOST"), os.Getenv("KAFKA_SERVICE_PORT")
+		p.Brokers = append(p.Brokers, host+":"+port)
+	}
+
 	config := sarama.NewConfig()
 	config.Producer.Retry.Max = 5
 
-	conn, err := sarama.NewAsyncProducer(p.brokers, config)
+	conn, err := sarama.NewAsyncProducer(p.Brokers, config)
 	if err != nil {
 		return nil, err
 	}
