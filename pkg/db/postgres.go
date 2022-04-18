@@ -48,13 +48,13 @@ func (c *ConfigPostgres) New() (*sql.DB, error) {
 // SetupConfig populates postgres config using environment variables.
 func (c *ConfigPostgres) SetupConfig() error {
 	// set user
-	c.User = "brucewayne"
+	c.User = DBUser
 
 	// set password
-	c.Pass = "batman"
+	c.Pass = DBPass
 
 	// set database
-	c.DB = "demo"
+	c.DB = DBName
 
 	// set host
 	if c.Host = os.Getenv("POSTGRES_SERVICE_HOST"); c.Host == "" {

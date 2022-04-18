@@ -49,13 +49,13 @@ func (c *ConfigMySQL) New() (*sql.DB, error) {
 // SetupConfig populates mysql config using environment variables.
 func (c *ConfigMySQL) SetupConfig() error {
 	// set user
-	c.User = "brucewayne"
+	c.User = DBUser
 
 	// set password
-	c.Pass = "batman"
+	c.Pass = DBPass
 
 	// set database
-	c.DB = "demo"
+	c.DB = DBName
 
 	// set host
 	if c.Host = os.Getenv("MYSQL_SERVICE_HOST"); c.Host == "" {
