@@ -10,7 +10,7 @@ import (
 func DemoHandler(c *gin.Context) {
 	var msg queue.Message
 	c.BindJSON(&msg)
-	HandleMessage(msg)
+	ProcessMessage(msg)
 }
 
 func QueueHandler() {
@@ -22,7 +22,7 @@ func QueueHandler() {
 		if len(m) > 0 {
 			var msg queue.Message
 			json.Unmarshal(m, &msg)
-			HandleMessage(msg)
+			ProcessMessage(msg)
 		}
 	}
 }
