@@ -25,6 +25,7 @@ func (c *Consumer) New() (sarama.Consumer, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return conn, nil
 }
 

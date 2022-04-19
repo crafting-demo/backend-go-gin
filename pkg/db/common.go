@@ -11,8 +11,8 @@ const (
 
 // Shared config.
 const (
-	DBUser = "brucewayne" // Database user
-	DBPass = "batman"     // Database password
-	DBName = "demo"       // Database name
-	Table  = "sample"     // Table/Schema/Type name
+	DBUser       = "brucewayne" // Database user
+	DBPass       = "batman"     // Database password
+	DBName       = "demo"       // Database name
+	DBCollection = "sample"     // Table/Schema/Type/Collection name
 )

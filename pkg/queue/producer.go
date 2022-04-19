@@ -25,6 +25,7 @@ func (p *Producer) New() (sarama.AsyncProducer, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return conn, nil
 }
 

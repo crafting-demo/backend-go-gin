@@ -126,7 +126,7 @@ func mongoRead(key string) (string, error) {
 	defer cancel()
 	defer client.Disconnect(ctx)
 
-	collection := client.Database(db.DBName).Collection(db.Table)
+	collection := client.Database(db.DBName).Collection(db.DBCollection)
 
 	var result struct {
 		Uuid    string `bson:"uuid"`
@@ -158,7 +158,7 @@ func mongoWrite(key string, value string) error {
 	defer cancel()
 	defer client.Disconnect(ctx)
 
-	collection := client.Database(db.DBName).Collection(db.Table)
+	collection := client.Database(db.DBName).Collection(db.DBCollection)
 
 	_, err = collection.InsertOne(ctx, bson.D{{Key: "uuid", Value: key}, {Key: "content", Value: value}})
 	if err != nil {
@@ -180,7 +180,7 @@ func dynamoRead(key string) (string, error) {
 	}
 
 	filter := &dynamodb.GetItemInput{
-		TableName: aws.String(db.Table),
+		TableName: aws.String(db.DBCollection),
 		Key: map[string]*dynamodb.AttributeValue{
 			"uuid": {
 				S: aws.String(key),
@@ -231,7 +231,7 @@ func dynamoWrite(key string, value string) error {
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,
-		TableName: aws.String(db.Table),
+		TableName: aws.String(db.DBCollection),
 	}
 	_, err = conn.PutItem(input)
 	if err != nil {

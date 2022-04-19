@@ -9,10 +9,7 @@ import (
 )
 
 type ConfigRedis struct {
-	// Host
 	Host string
-
-	// Port
 	Port string
 }
 
@@ -27,16 +24,12 @@ func (c *ConfigRedis) New() *redis.Client {
 
 // SetupConfig populates redis config using environment variables.
 func (c *ConfigRedis) SetupConfig() error {
-	// set host
 	if c.Host = os.Getenv("REDIS_SERVICE_HOST"); c.Host == "" {
 		return errors.New("missing env REDIS_SERVICE_HOST")
 	}
-
-	// set port
 	if c.Port = os.Getenv("REDIS_SERVICE_PORT"); c.Port == "" {
 		return errors.New("missing env REDIS_SERVICE_PORT")
 	}
-
 	return nil
 }
 
