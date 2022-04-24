@@ -59,9 +59,9 @@ func Read(action kafka.Action, meta kafka.Meta) {
 	case db.Postgres:
 		value, err = postgresRead(key)
 	case db.MongoDB:
-		value, err = mongoRead(key)
+		value, err = mongodbRead(key)
 	case db.DynamoDB:
-		value, err = dynamoRead(key)
+		value, err = dynamodbRead(key)
 	case db.Redis:
 		value, err = redisRead(key)
 	}
@@ -96,9 +96,9 @@ func Write(action kafka.Action, meta kafka.Meta) {
 	case db.Postgres:
 		err = postgresWrite(key, value)
 	case db.MongoDB:
-		err = mongoWrite(key, value)
+		err = mongodbWrite(key, value)
 	case db.DynamoDB:
-		err = dynamoWrite(key, value)
+		err = dynamodbWrite(key, value)
 	case db.Redis:
 		err = redisWrite(key, value)
 	}

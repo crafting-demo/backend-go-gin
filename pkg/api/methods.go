@@ -15,6 +15,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// mysqlRead returns value of key from mysql.
 func mysqlRead(key string) (string, error) {
 	var config db.ConfigMySQL
 	if err := config.SetupConfig(); err != nil {
@@ -41,6 +42,7 @@ func mysqlRead(key string) (string, error) {
 	return value, nil
 }
 
+// mysqlWrite stores key value pair in mysql.
 func mysqlWrite(key string, value string) error {
 	var config db.ConfigMySQL
 	if err := config.SetupConfig(); err != nil {
@@ -64,6 +66,7 @@ func mysqlWrite(key string, value string) error {
 	return nil
 }
 
+// postgresRead returns value of key from postgres.
 func postgresRead(key string) (string, error) {
 	var config db.ConfigPostgres
 	if err := config.SetupConfig(); err != nil {
@@ -90,6 +93,7 @@ func postgresRead(key string) (string, error) {
 	return value, nil
 }
 
+// postgresWrite stores key value pair in postgres.
 func postgresWrite(key string, value string) error {
 	var config db.ConfigPostgres
 	if err := config.SetupConfig(); err != nil {
@@ -113,7 +117,8 @@ func postgresWrite(key string, value string) error {
 	return nil
 }
 
-func mongoRead(key string) (string, error) {
+// mongodbRead returns value of key from mongodb.
+func mongodbRead(key string) (string, error) {
 	var config db.ConfigMongoDB
 	if err := config.SetupConfig(); err != nil {
 		return "", err
@@ -145,7 +150,8 @@ func mongoRead(key string) (string, error) {
 	return result.Content, nil
 }
 
-func mongoWrite(key string, value string) error {
+// mongodbWrite stores key value pair in mongodb.
+func mongodbWrite(key string, value string) error {
 	var config db.ConfigMongoDB
 	if err := config.SetupConfig(); err != nil {
 		return err
@@ -168,7 +174,8 @@ func mongoWrite(key string, value string) error {
 	return nil
 }
 
-func dynamoRead(key string) (string, error) {
+// dynamodbRead returns value of key from dynamodb.
+func dynamodbRead(key string) (string, error) {
 	var config db.ConfigDynamoDB
 	if err := config.SetupConfig(); err != nil {
 		return "", err
@@ -209,7 +216,8 @@ func dynamoRead(key string) (string, error) {
 	return item.Content, nil
 }
 
-func dynamoWrite(key string, value string) error {
+// dynamodbWrite stores key value pair in dynamodb.
+func dynamodbWrite(key string, value string) error {
 	var config db.ConfigDynamoDB
 	if err := config.SetupConfig(); err != nil {
 		return err
@@ -241,6 +249,7 @@ func dynamoWrite(key string, value string) error {
 	return nil
 }
 
+// redisRead returns value of key from redis.
 func redisRead(key string) (string, error) {
 	var config db.ConfigRedis
 	if err := config.SetupConfig(); err != nil {
@@ -263,6 +272,7 @@ func redisRead(key string) (string, error) {
 	return value, nil
 }
 
+// redisWrite stores key value pair in redis.
 func redisWrite(key string, value string) error {
 	var config db.ConfigRedis
 	if err := config.SetupConfig(); err != nil {
