@@ -10,10 +10,10 @@ const (
 
 // Topics.
 const (
-	React   = "queue-react"
-	Golang  = "queue-golang"
-	Express = "queue-express"
-	Ruby    = "queue-ruby"
-	Kotlin  = "queue-kotlin"
-	Python  = "queue-python"
+	React   = "frontend-react"
+	Go      = "backend-go"
+	Express = "backend-express"
+	Rails   = "backend-rails"
+	Kotlin  = "backend-kotlin"
+	Python  = "backend-python"
 )
