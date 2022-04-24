@@ -1,3 +1,3 @@
-# backend-go-gin
+# backend-go
 
-Go-Gin backend service in a multi-language, multi-service, demo app.
+Go backend service in a multi-language, multi-service, demo app.
