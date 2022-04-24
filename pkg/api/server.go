@@ -3,7 +3,7 @@ package api
 import (
 	"encoding/json"
 
-	"github.com/crafting-demo/backend-go-gin/pkg/kafka"
+	"github.com/crafting-demo/backend-go/pkg/kafka"
 )
 
 func Run() {

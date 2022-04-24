@@ -1,6 +1,6 @@
 package main
 
-import "github.com/crafting-demo/backend-go-gin/pkg/api"
+import "github.com/crafting-demo/backend-go/pkg/api"
 
 func main() {
 	api.Run()

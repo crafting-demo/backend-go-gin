@@ -1,4 +1,4 @@
-module github.com/crafting-demo/backend-go-gin
+module github.com/crafting-demo/backend-go
 
 go 1.18
 

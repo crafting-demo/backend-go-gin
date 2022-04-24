@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/crafting-demo/backend-go-gin/pkg/db"
-	"github.com/crafting-demo/backend-go-gin/pkg/kafka"
+	"github.com/crafting-demo/backend-go/pkg/db"
+	"github.com/crafting-demo/backend-go/pkg/kafka"
 )
 
 // Process processes a message.
