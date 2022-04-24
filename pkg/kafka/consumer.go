@@ -2,7 +2,6 @@ package kafka
 
 import (
 	"os"
-	"os/signal"
 
 	"github.com/Shopify/sarama"
 )
@@ -29,30 +28,18 @@ func (c *Consumer) New() (sarama.Consumer, error) {
 	return conn, nil
 }
 
-// Run listens to a queue topic for processing.
-func (c *Consumer) Run(msgCh chan<- []byte, doneCh chan struct{}) error {
+// Messages returns the read channel for the messages that are returned by the broker.
+func (c *Consumer) Messages() (<-chan *sarama.ConsumerMessage, error) {
 	conn, err := c.New()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer conn.Close()
 
 	consumer, err := conn.ConsumePartition(c.Topic, 0, sarama.OffsetOldest)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	signalCh := make(chan os.Signal, 1)
-	signal.Notify(signalCh, os.Interrupt)
-
-	for {
-		select {
-		case <-doneCh:
-			return nil
-		case <-signalCh:
-			doneCh <- struct{}{}
-		case msg := <-consumer.Messages():
-			msgCh <- msg.Value
-		}
-	}
+	return consumer.Messages(), nil
 }

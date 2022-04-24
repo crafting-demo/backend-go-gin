@@ -2,25 +2,31 @@ package api
 
 import (
 	"encoding/json"
+	"os"
+	"os/signal"
 
 	"github.com/crafting-demo/backend-go/pkg/kafka"
 )
 
 func Run() {
-	msgCh := make(chan []byte)
-	doneCh := make(chan struct{}, 1)
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh, os.Interrupt)
 
 	consumer := kafka.Consumer{Topic: Go}
-	go consumer.Run(msgCh, doneCh)
+
+	messages, err := consumer.Messages()
+	if err != nil {
+		return
+	}
 
 	for {
 		select {
-		case <-doneCh:
+		case <-signalCh:
 			return
-		case m := <-msgCh:
-			var msg kafka.Message
-			if err := json.Unmarshal(m, &msg); err == nil {
-				Process(msg)
+		case msg := <-messages:
+			var message kafka.Message
+			if err := json.Unmarshal(msg.Value, &message); err == nil {
+				Process(message)
 			}
 		}
 	}

@@ -36,8 +36,8 @@ func Echo(action kafka.Action, meta kafka.Meta) {
 	}
 	msg.Actions = append(msg.Actions, action)
 
-	broker := kafka.Producer{Topic: React}
-	broker.Enqueue(msg)
+	producer := kafka.Producer{Topic: React}
+	producer.Enqueue(msg)
 }
 
 // Read processes "Read" message actions.
@@ -74,8 +74,8 @@ func Read(action kafka.Action, meta kafka.Meta) {
 
 	msg.Actions = append(msg.Actions, action)
 
-	broker := kafka.Producer{Topic: React}
-	broker.Enqueue(msg)
+	producer := kafka.Producer{Topic: React}
+	producer.Enqueue(msg)
 }
 
 // Write processes "Write" message actions.
@@ -109,8 +109,8 @@ func Write(action kafka.Action, meta kafka.Meta) {
 
 	msg.Actions = append(msg.Actions, action)
 
-	broker := kafka.Producer{Topic: React}
-	broker.Enqueue(msg)
+	producer := kafka.Producer{Topic: React}
+	producer.Enqueue(msg)
 }
 
 // Call processes "Call" message actions.
@@ -124,6 +124,6 @@ func Call(action kafka.Action, meta kafka.Meta) {
 		Actions: action.Payload.Actions,
 	}
 
-	broker := kafka.Producer{Topic: action.Payload.ServiceName}
-	broker.Enqueue(msg)
+	producer := kafka.Producer{Topic: action.Payload.ServiceName}
+	producer.Enqueue(msg)
 }
