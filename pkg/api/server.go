@@ -20,7 +20,7 @@ func Run() {
 	}
 	defer conn.Close()
 
-	partitionConsumer, err := conn.ConsumePartition(consumer.Topic, 0, sarama.OffsetOldest)
+	partitionConsumer, err := conn.ConsumePartition(consumer.Topic, 0, sarama.OffsetNewest)
 	if err != nil {
 		log.Println("Run: failed to create partition consumer", err)
 	}
