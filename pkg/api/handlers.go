@@ -31,7 +31,7 @@ func Echo(action kafka.Action, meta kafka.Meta) {
 		Meta: kafka.Meta{
 			Caller:   meta.Callee,
 			Callee:   React,
-			CallTime: kafka.Timestamp(time.Now()),
+			CallTime: time.Now().String(),
 		},
 	}
 	msg.Actions = append(msg.Actions, action)
@@ -46,7 +46,7 @@ func Read(action kafka.Action, meta kafka.Meta) {
 		Meta: kafka.Meta{
 			Caller:   meta.Callee,
 			Callee:   React,
-			CallTime: kafka.Timestamp(time.Now()),
+			CallTime: time.Now().String(),
 		},
 	}
 
@@ -84,7 +84,7 @@ func Write(action kafka.Action, meta kafka.Meta) {
 		Meta: kafka.Meta{
 			Caller:   meta.Callee,
 			Callee:   React,
-			CallTime: kafka.Timestamp(time.Now()),
+			CallTime: time.Now().String(),
 		},
 	}
 
@@ -119,7 +119,7 @@ func Call(action kafka.Action, meta kafka.Meta) {
 		Meta: kafka.Meta{
 			Caller:   meta.Callee,
 			Callee:   action.Payload.ServiceName,
-			CallTime: kafka.Timestamp(time.Now()),
+			CallTime: time.Now().String(),
 		},
 		Actions: action.Payload.Actions,
 	}
