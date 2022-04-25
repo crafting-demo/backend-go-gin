@@ -36,14 +36,14 @@ func (p *Producer) New() (sarama.AsyncProducer, error) {
 func (p *Producer) Enqueue(message Message) error {
 	conn, err := p.New()
 	if err != nil {
-		log.Println("Failed to create new producer", err)
+		log.Println("Enqueue", "Failed to create new producer", err)
 		return err
 	}
 	defer conn.Close()
 
 	value, err := json.Marshal(message)
 	if err != nil {
-		log.Println("Failed to encode json message", err)
+		log.Println("Enqueue", "Failed to encode json message", err)
 		return err
 	}
 
@@ -60,7 +60,7 @@ func (p *Producer) Enqueue(message Message) error {
 		case conn.Input() <- msg:
 			return nil
 		case err := <-conn.Errors():
-			log.Println("Failed to produce message", err)
+			log.Println("Enqueue", "Failed to produce message", err)
 		case <-signals:
 			return nil
 		}

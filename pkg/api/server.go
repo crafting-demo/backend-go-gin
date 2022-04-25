@@ -15,14 +15,14 @@ func Run() {
 
 	conn, err := consumer.New()
 	if err != nil {
-		log.Println("Failed to create new consumer", err)
+		log.Println("Run", "Failed to create new consumer", err)
 		return
 	}
 	defer conn.Close()
 
 	partitionConsumer, err := conn.ConsumePartition(consumer.Topic, 0, sarama.OffsetOldest)
 	if err != nil {
-		log.Println("Failed to create partition consumer", err)
+		log.Println("Run", "Failed to create partition consumer", err)
 	}
 	defer partitionConsumer.Close()
 
@@ -34,7 +34,7 @@ func Run() {
 		case msg := <-partitionConsumer.Messages():
 			var message kafka.Message
 			if err := json.Unmarshal(msg.Value, &message); err != nil {
-				log.Println("Failed to parse json encoded message", err)
+				log.Println("Run", "Failed to parse json encoded message", err)
 				continue
 			}
 			go Process(message)
