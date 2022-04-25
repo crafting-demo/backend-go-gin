@@ -27,19 +27,3 @@ func (c *Consumer) New() (sarama.Consumer, error) {
 
 	return conn, nil
 }
-
-// Messages returns the read channel for the messages that are returned by the broker.
-func (c *Consumer) Messages() (<-chan *sarama.ConsumerMessage, error) {
-	conn, err := c.New()
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-
-	consumer, err := conn.ConsumePartition(c.Topic, 0, sarama.OffsetOldest)
-	if err != nil {
-		return nil, err
-	}
-
-	return consumer.Messages(), nil
-}

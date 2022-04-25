@@ -2,7 +2,9 @@ package kafka
 
 import (
 	"encoding/json"
+	"log"
 	"os"
+	"os/signal"
 
 	"github.com/Shopify/sarama"
 )
@@ -34,21 +36,33 @@ func (p *Producer) New() (sarama.AsyncProducer, error) {
 func (p *Producer) Enqueue(message Message) error {
 	conn, err := p.New()
 	if err != nil {
+		log.Println("Failed to create new producer", err)
 		return err
 	}
 	defer conn.Close()
 
-	val, err := json.Marshal(message)
+	value, err := json.Marshal(message)
 	if err != nil {
+		log.Println("Failed to encode json message", err)
 		return err
 	}
 
 	msg := &sarama.ProducerMessage{
 		Topic: p.Topic,
-		Value: sarama.ByteEncoder(val),
+		Value: sarama.StringEncoder(string(value)),
 	}
 
-	conn.Input() <- msg
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt)
 
-	return nil
+	for {
+		select {
+		case conn.Input() <- msg:
+			return nil
+		case err := <-conn.Errors():
+			log.Println("Failed to produce message", err)
+		case <-signals:
+			return nil
+		}
+	}
 }
