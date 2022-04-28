@@ -6,9 +6,10 @@ type Message struct {
 }
 
 type Meta struct {
-	Caller   string `json:"caller"`
-	Callee   string `json:"callee"`
-	CallTime string `json:"callTime"`
+	Caller     string `json:"caller"`
+	Callee     string `json:"callee"`
+	CallTime   string `json:"callTime"`
+	ReturnTime string `json:"returnTime,omitempty"`
 }
 
 type Action struct {

@@ -65,6 +65,8 @@ func NestedCallHandler(c *gin.Context) {
 		message.Actions[i].ReturnTime = currentTime()
 	}
 
+	message.Meta.ReturnTime = currentTime()
+
 	c.JSON(http.StatusOK, message)
 
 	if message.Meta.Caller != React {
