@@ -1,7 +1,20 @@
 package main
 
-import "github.com/crafting-demo/backend-go/pkg/api"
+import (
+	"log"
+	"os"
+
+	"github.com/crafting-demo/backend-go-gin/pkg/api"
+)
 
 func main() {
-	api.Run()
+	var ctx api.Context
+
+	ctx.Mode = "release"
+	ctx.Port = os.Getenv("GO_SERVICE_PORT")
+	if ctx.Port == "" {
+		log.Fatal("GO_SERVICE_PORT must be set")
+	}
+
+	api.Run(ctx)
 }

@@ -1,4 +1,4 @@
-package kafka
+package api
 
 type Message struct {
 	Meta    Meta     `json:"meta"`
@@ -12,8 +12,11 @@ type Meta struct {
 }
 
 type Action struct {
-	Action  string  `json:"action"`
-	Payload Payload `json:"payload"`
+	ServiceName string  `json:"serviceName,omitempty"`
+	ReturnTime  string  `json:"returnTime,omitempty"`
+	Status      string  `json:"status,omitempty"`
+	Action      string  `json:"action"`
+	Payload     Payload `json:"payload"`
 }
 
 type Payload struct {

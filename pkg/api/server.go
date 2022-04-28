@@ -1,45 +1,21 @@
 package api
 
 import (
-	"encoding/json"
-	"log"
-	"os"
-	"os/signal"
-
-	"github.com/Shopify/sarama"
-	"github.com/crafting-demo/backend-go/pkg/kafka"
+	"github.com/gin-gonic/gin"
 )
 
-func Run() {
-	consumer := kafka.Consumer{Topic: Go}
+type Context struct {
+	Mode string
+	Port string
+}
 
-	conn, err := consumer.New()
-	if err != nil {
-		log.Println("Run: failed to create new consumer", err)
-		return
-	}
-	defer conn.Close()
+func Run(ctx Context) {
+	gin.SetMode(ctx.Mode)
 
-	partitionConsumer, err := conn.ConsumePartition(consumer.Topic, 0, sarama.OffsetNewest)
-	if err != nil {
-		log.Println("Run: failed to create partition consumer", err)
-	}
-	defer partitionConsumer.Close()
+	router := gin.Default()
 
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
+	router.POST("/", NestedCallHandler)
+	router.NoRoute(BadRequest)
 
-	for {
-		select {
-		case msg := <-partitionConsumer.Messages():
-			var message kafka.Message
-			if err := json.Unmarshal(msg.Value, &message); err != nil {
-				log.Println("Run: failed to parse json encoded message", err)
-				continue
-			}
-			go Process(message)
-		case <-signals:
-			return
-		}
-	}
+	router.Run(":" + ctx.Port)
 }

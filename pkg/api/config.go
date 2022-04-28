@@ -2,18 +2,25 @@ package api
 
 // Actions.
 const (
-	ECHO  = "Echo"
-	READ  = "Read"
-	WRITE = "Write"
-	CALL  = "Call"
+	Echo    = "Echo"
+	Read    = "Read"
+	Write   = "Write"
+	Call    = "Call"
+	Enqueue = "Enqueue"
 )
 
-// Topics.
+// Action status.
 const (
-	React   = "frontend-react"
-	Go      = "backend-go"
-	Express = "backend-express"
-	Rails   = "backend-rails"
-	Kotlin  = "backend-kotlin"
-	Python  = "backend-python"
+	Passed = "passed"
+	Failed = "failed"
+)
+
+// Service names.
+const (
+	React   = "frontend-typescript-react"
+	Gin     = "backend-go-gin"
+	Express = "backend-typescript-express"
+	Rails   = "backend-ruby-rails"
+	Spring  = "backend-kotlin-spring"
+	Django  = "backend-python-django"
 )

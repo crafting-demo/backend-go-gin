@@ -1,8 +1,6 @@
 package kafka
 
 import (
-	"encoding/json"
-	"log"
 	"os"
 	"os/signal"
 
@@ -33,23 +31,16 @@ func (p *Producer) New() (sarama.AsyncProducer, error) {
 }
 
 // Enqueue adds a new message to a queue by topic.
-func (p *Producer) Enqueue(message Message) error {
+func (p *Producer) Enqueue(message []byte) error {
 	conn, err := p.New()
 	if err != nil {
-		log.Println("Enqueue: failed to create new producer", err)
 		return err
 	}
 	defer conn.Close()
 
-	value, err := json.Marshal(message)
-	if err != nil {
-		log.Println("Enqueue: failed to encode json message", err)
-		return err
-	}
-
 	msg := &sarama.ProducerMessage{
 		Topic: p.Topic,
-		Value: sarama.StringEncoder(string(value)),
+		Value: sarama.StringEncoder(string(message)),
 	}
 
 	signals := make(chan os.Signal, 1)
@@ -60,7 +51,7 @@ func (p *Producer) Enqueue(message Message) error {
 		case conn.Input() <- msg:
 			return nil
 		case err := <-conn.Errors():
-			log.Println("Enqueue: failed to produce message", err)
+			return err
 		case <-signals:
 			return nil
 		}
