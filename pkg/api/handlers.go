@@ -24,41 +24,41 @@ func NestedCallHandler(c *gin.Context) {
 		return
 	}
 
-	for _, action := range message.Actions {
+	for i, action := range message.Actions {
 		switch action.Action {
 		case Echo:
-			action.Status = Passed
+			message.Actions[i].Status = Passed
 		case Read:
 			value, err := ReadEntity(action.Payload.ServiceName, action.Payload.Key)
 			if err != nil {
 				logger.Write("NestedCallHandler", "failed to read key", err)
-				action.Status = Failed
+				message.Actions[i].Status = Failed
 				break
 			}
-			action.Status = Passed
-			action.Payload.Value = value
+			message.Actions[i].Status = Passed
+			message.Actions[i].Payload.Value = value
 		case Write:
 			if err := WriteEntity(action.Payload.ServiceName, action.Payload.Key, action.Payload.Value); err != nil {
 				logger.Write("NestedCallHandler", "failed to write key/value pair", err)
-				action.Status = Failed
+				message.Actions[i].Status = Failed
 				break
 			}
-			action.Status = Passed
+			message.Actions[i].Status = Passed
 		case Call:
 			respBody, err := serviceCall(action.Payload)
 			if err != nil {
 				logger.Write("NestedCallHandler", "failed to call "+action.Payload.ServiceName, err)
-				action.Status = Failed
+				message.Actions[i].Status = Failed
 				break
 			}
 			var msg Message
 			if err := json.Unmarshal(respBody, &msg); err != nil {
 				logger.Write("NestedCallHandler", "failed to unmarshal response message from call", err)
-				action.Status = Failed
+				message.Actions[i].Status = Failed
 				break
 			}
-			action.Status = Passed
-			action.Payload.Actions = msg.Actions
+			message.Actions[i].Status = Passed
+			message.Actions[i].Payload.Actions = msg.Actions
 		case Enqueue:
 			msg := Message{
 				Meta: Meta{
@@ -70,14 +70,14 @@ func NestedCallHandler(c *gin.Context) {
 			}
 			if err := enqueueMessage(msg); err != nil {
 				logger.Write("NestedCallHandler", "failed to call enqueue message", err)
-				action.Status = Failed
+				message.Actions[i].Status = Failed
 				break
 			}
-			action.Status = Passed
+			message.Actions[i].Status = Passed
 		}
 
-		action.ServiceName = Gin
-		action.ReturnTime = currentTime()
+		message.Actions[i].ServiceName = Gin
+		message.Actions[i].ReturnTime = currentTime()
 	}
 
 	c.JSON(http.StatusOK, message)
