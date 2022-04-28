@@ -11,9 +11,9 @@ func main() {
 	var ctx api.Context
 
 	ctx.Mode = "release"
-	ctx.Port = os.Getenv("GO_SERVICE_PORT")
+	ctx.Port = os.Getenv("GIN_SERVICE_PORT")
 	if ctx.Port == "" {
-		log.Fatal("GO_SERVICE_PORT must be set")
+		log.Fatal("GIN_SERVICE_PORT must be set")
 	}
 
 	api.Run(ctx)
