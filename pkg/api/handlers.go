@@ -71,7 +71,7 @@ func NestedCallHandler(c *gin.Context) {
 		return
 	}
 
-	if err := enqueueMessage(message.Meta.Caller, message); err != nil {
+	if err := enqueueMessage(React, message); err != nil {
 		logger.Write("NestedCallHandler", "failed to enqueue message", err)
 	}
 }
