@@ -65,12 +65,15 @@ func NestedCallHandler(c *gin.Context) {
 		message.Actions[i].ReturnTime = currentTime()
 	}
 
-	// Enqueue nested call response before returning.
-	if err := enqueueMessage(message); err != nil {
-		logger.Write("NestedCallHandler", "failed to enqueue message", err)
+	c.JSON(http.StatusOK, message)
+
+	if message.Meta.Caller != React {
+		return
 	}
 
-	c.JSON(http.StatusOK, message)
+	if err := enqueueMessage(message.Meta.Caller, message); err != nil {
+		logger.Write("NestedCallHandler", "failed to enqueue message", err)
+	}
 }
 
 func serviceCall(payload Payload) ([]byte, error) {
@@ -121,14 +124,14 @@ func serviceEndpoint(serviceName string) string {
 	return "unknown"
 }
 
-func enqueueMessage(message Message) error {
+func enqueueMessage(topic string, message Message) error {
 	msg, err := json.Marshal(message)
 	if err != nil {
 		return err
 	}
 
 	var producer kafka.Producer
-	if err := producer.Enqueue(message.Meta.Caller, msg); err != nil {
+	if err := producer.Enqueue(topic, msg); err != nil {
 		return err
 	}
 
