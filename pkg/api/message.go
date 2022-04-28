@@ -13,10 +13,10 @@ type Meta struct {
 
 type Action struct {
 	ServiceName string  `json:"serviceName,omitempty"`
-	ReturnTime  string  `json:"returnTime,omitempty"`
-	Status      string  `json:"status,omitempty"`
 	Action      string  `json:"action"`
 	Payload     Payload `json:"payload"`
+	Status      string  `json:"status,omitempty"`
+	ReturnTime  string  `json:"returnTime,omitempty"`
 }
 
 type Payload struct {
