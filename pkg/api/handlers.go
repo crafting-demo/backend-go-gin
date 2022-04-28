@@ -108,8 +108,6 @@ func serviceCall(payload Payload) ([]byte, error) {
 func serviceEndpoint(serviceName string) string {
 	suffix := os.Getenv("SANDBOX_ENDPOINT_DNS_SUFFIX")
 	switch serviceName {
-	case React:
-		return "https://react" + suffix
 	case Gin:
 		return "https://gin" + suffix
 	case Express:
