@@ -2,17 +2,16 @@ package api
 
 // Actions.
 const (
-	Echo    = "Echo"
-	Read    = "Read"
-	Write   = "Write"
-	Call    = "Call"
-	Enqueue = "Enqueue"
+	Echo  = "Echo"
+	Read  = "Read"
+	Write = "Write"
+	Call  = "Call"
 )
 
 // Action status.
 const (
-	Passed = "passed"
-	Failed = "failed"
+	Passed = "Passed"
+	Failed = "Failed"
 )
 
 // Service names.

@@ -53,31 +53,21 @@ func NestedCallHandler(c *gin.Context) {
 			}
 			var msg Message
 			if err := json.Unmarshal(respBody, &msg); err != nil {
-				logger.Write("NestedCallHandler", "failed to unmarshal response message from call", err)
+				logger.Write("NestedCallHandler", "failed to unmarshal call response", err)
 				message.Actions[i].Status = Failed
 				break
 			}
 			message.Actions[i].Status = Passed
 			message.Actions[i].Payload.Actions = msg.Actions
-		case Enqueue:
-			msg := Message{
-				Meta: Meta{
-					Caller:   Gin,
-					Callee:   action.Payload.ServiceName,
-					CallTime: currentTime(),
-				},
-				Actions: action.Payload.Actions,
-			}
-			if err := enqueueMessage(msg); err != nil {
-				logger.Write("NestedCallHandler", "failed to call enqueue message", err)
-				message.Actions[i].Status = Failed
-				break
-			}
-			message.Actions[i].Status = Passed
 		}
 
 		message.Actions[i].ServiceName = Gin
 		message.Actions[i].ReturnTime = currentTime()
+	}
+
+	// Enqueue nested call response before returning.
+	if err := enqueueMessage(message); err != nil {
+		logger.Write("NestedCallHandler", "failed to enqueue message", err)
 	}
 
 	c.JSON(http.StatusOK, message)
@@ -137,8 +127,8 @@ func enqueueMessage(message Message) error {
 		return err
 	}
 
-	producer := kafka.Producer{Topic: message.Meta.Callee}
-	if err := producer.Enqueue(msg); err != nil {
+	var producer kafka.Producer
+	if err := producer.Enqueue(message.Meta.Caller, msg); err != nil {
 		return err
 	}
 

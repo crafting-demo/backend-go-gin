@@ -8,7 +8,6 @@ import (
 )
 
 type Producer struct {
-	Topic   string
 	Brokers []string
 }
 
@@ -31,7 +30,7 @@ func (p *Producer) New() (sarama.AsyncProducer, error) {
 }
 
 // Enqueue adds a new message to a queue by topic.
-func (p *Producer) Enqueue(message []byte) error {
+func (p *Producer) Enqueue(topic string, message []byte) error {
 	conn, err := p.New()
 	if err != nil {
 		return err
@@ -39,7 +38,7 @@ func (p *Producer) Enqueue(message []byte) error {
 	defer conn.Close()
 
 	msg := &sarama.ProducerMessage{
-		Topic: p.Topic,
+		Topic: topic,
 		Value: sarama.StringEncoder(string(message)),
 	}
 

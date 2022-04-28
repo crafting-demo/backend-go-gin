@@ -7,7 +7,6 @@ import (
 )
 
 type Consumer struct {
-	Topic   string
 	Brokers []string
 }
 

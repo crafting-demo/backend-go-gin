@@ -14,7 +14,6 @@ func Run(ctx Context) {
 	gin.SetMode(ctx.Mode)
 
 	router := gin.Default()
-
 	router.Use(cors.Default())
 
 	router.POST("/", NestedCallHandler)
