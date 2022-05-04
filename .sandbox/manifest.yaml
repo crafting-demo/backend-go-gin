@@ -1,0 +1,8 @@
+hooks:
+  build:
+    cmd: go build -o bin/server cmd/main.go
+
+daemons:
+  server:
+    run:
+      cmd: bin/server
