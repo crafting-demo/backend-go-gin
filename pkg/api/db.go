@@ -16,11 +16,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// ReadEntity returns value of key from some data source.
-func ReadEntity(source string, key string) (string, error) {
+// ReadEntity returns value of key from some data store.
+func ReadEntity(store string, key string) (string, error) {
 	var value string
 	var err error
-	switch source {
+	switch store {
 	case db.MySQL:
 		value, err = readMySQL(key)
 	case db.Postgres:
@@ -32,15 +32,15 @@ func ReadEntity(source string, key string) (string, error) {
 	case db.Redis:
 		value, err = readRedis(key)
 	default:
-		return value, errors.New("unsupported data source: " + source)
+		return value, errors.New("unsupported data store: " + store)
 	}
 	return value, err
 }
 
-// WriteEntity writes a key/value pair to some data source.
-func WriteEntity(source string, key string, value string) error {
+// WriteEntity writes a key/value pair to some data store.
+func WriteEntity(store string, key string, value string) error {
 	var err error
-	switch source {
+	switch store {
 	case db.MySQL:
 		err = writeMySQL(key, value)
 	case db.Postgres:
@@ -52,7 +52,7 @@ func WriteEntity(source string, key string, value string) error {
 	case db.Redis:
 		err = writeRedis(key, value)
 	default:
-		return errors.New("unsupported data source: " + source)
+		return errors.New("unsupported data store: " + store)
 	}
 	return err
 }
