@@ -17,7 +17,8 @@ type ConfigDynamoDB struct {
 
 // New returns a new dynamodb connection.
 func (c *ConfigDynamoDB) New() (*dynamodb.DynamoDB, error) {
-	s, err := session.NewSession(aws.NewConfig().WithEndpoint(c.DataSourceName()))
+	s, err := session.NewSession(
+		aws.NewConfig().WithEndpoint(c.DataSourceName()).WithRegion("us-west-2").WithCredentialsChainVerboseErrors(true))
 	if err != nil {
 		return nil, err
 	}

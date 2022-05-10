@@ -14,6 +14,7 @@ func Run(ctx Context) {
 	gin.SetMode(ctx.Mode)
 
 	router := gin.New()
+
 	router.Use(gin.Recovery())
 	router.Use(cors.Default())
 

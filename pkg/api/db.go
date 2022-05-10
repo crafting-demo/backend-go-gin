@@ -70,7 +70,7 @@ func readMySQL(key string) (string, error) {
 	}
 	defer conn.Close()
 
-	query := fmt.Sprintf("select content from %s where uuid = '%s'", db.DBName, key)
+	query := fmt.Sprintf("select content from %s where uuid = '%s'", db.DBCollection, key)
 	row := conn.QueryRow(query)
 
 	var value string
@@ -97,11 +97,14 @@ func writeMySQL(key string, value string) error {
 	}
 	defer conn.Close()
 
-	stmt := fmt.Sprintf("insert into %s (uuid, content) values ($1, $2) returning uuid", db.DBName)
-	row := conn.QueryRow(stmt, key, value)
+	stmt := fmt.Sprintf("insert into %s (uuid, content) values (?, ?)", db.DBCollection)
+	row, err := conn.Exec(stmt, key, value)
+	if err != nil {
+		return err
+	}
 
-	var uuid string
-	if err := row.Scan(&uuid); err != nil {
+	_, err = row.LastInsertId()
+	if err != nil {
 		return err
 	}
 
@@ -121,7 +124,7 @@ func readPostgres(key string) (string, error) {
 	}
 	defer conn.Close()
 
-	query := fmt.Sprintf("select content from %s where uuid = '%s'", db.DBName, key)
+	query := fmt.Sprintf("select content from %s where uuid = '%s'", db.DBCollection, key)
 	row := conn.QueryRow(query)
 
 	var value string
@@ -148,7 +151,7 @@ func writePostgres(key string, value string) error {
 	}
 	defer conn.Close()
 
-	stmt := fmt.Sprintf("insert into %s (uuid, content) values ($1, $2) returning uuid", db.DBName)
+	stmt := fmt.Sprintf("insert into %s (uuid, content) values ($1, $2) returning uuid", db.DBCollection)
 	row := conn.QueryRow(stmt, key, value)
 
 	var uuid string
