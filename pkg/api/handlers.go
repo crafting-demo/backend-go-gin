@@ -14,8 +14,6 @@ import (
 )
 
 // NestedCallHandler handles a "nested call" API.
-// Accepts POST requests with a JSON body specifying
-// the nested call, and returns the response JSON.
 func NestedCallHandler(c *gin.Context) {
 	receivedAt := currentTime()
 	var errors []error
