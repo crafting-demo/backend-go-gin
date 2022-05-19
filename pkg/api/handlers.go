@@ -14,15 +14,18 @@ import (
 )
 
 // NestedCallHandler handles a "nested call" API.
-// Accepts POST requests with a JSON body specifying the nested call.
-// It processes the nested call, and returns the result JSON message.
 func NestedCallHandler(c *gin.Context) {
+	receivedAt := currentTime()
+	var errors []error
+
 	var message Message
 	if err := c.ShouldBind(&message); err != nil {
-		logger.Write("NestedCallHandler", "failed to bind json", err)
+		logger.WriteContext(nil, nil, append(errors, err), receivedAt)
 		InternalServerError(c)
 		return
 	}
+
+	request, _ := json.Marshal(message)
 
 	for i, action := range message.Actions {
 		switch action.Action {
@@ -31,7 +34,7 @@ func NestedCallHandler(c *gin.Context) {
 		case Read:
 			value, err := ReadEntity(action.Payload.ServiceName, action.Payload.Key)
 			if err != nil {
-				logger.Write("NestedCallHandler", "failed to read key", err)
+				errors = append(errors, err)
 				message.Actions[i].Status = Failed
 				break
 			}
@@ -39,7 +42,7 @@ func NestedCallHandler(c *gin.Context) {
 			message.Actions[i].Payload.Value = value
 		case Write:
 			if err := WriteEntity(action.Payload.ServiceName, action.Payload.Key, action.Payload.Value); err != nil {
-				logger.Write("NestedCallHandler", "failed to write key/value pair", err)
+				errors = append(errors, err)
 				message.Actions[i].Status = Failed
 				break
 			}
@@ -47,13 +50,13 @@ func NestedCallHandler(c *gin.Context) {
 		case Call:
 			respBody, err := serviceCall(action.Payload)
 			if err != nil {
-				logger.Write("NestedCallHandler", "failed to call "+action.Payload.ServiceName, err)
+				errors = append(errors, err)
 				message.Actions[i].Status = Failed
 				break
 			}
 			var msg Message
 			if err := json.Unmarshal(respBody, &msg); err != nil {
-				logger.Write("NestedCallHandler", "failed to unmarshal call response", err)
+				errors = append(errors, err)
 				message.Actions[i].Status = Failed
 				break
 			}
@@ -69,12 +72,11 @@ func NestedCallHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, message)
 
-	if message.Meta.Caller != React {
-		return
-	}
+	response, _ := json.Marshal(message)
+	logger.WriteContext(request, response, errors, receivedAt)
 
-	if err := enqueueMessage(React, message); err != nil {
-		logger.Write("NestedCallHandler", "failed to enqueue message", err)
+	if message.Meta.Caller == React {
+		enqueueMessage(React, message)
 	}
 }
 
@@ -108,7 +110,7 @@ func serviceCall(payload Payload) ([]byte, error) {
 }
 
 func serviceEndpoint(serviceName string) string {
-	suffix := os.Getenv("SANDBOX_ENDPOINT_DNS_SUFFIX")
+	suffix := os.Getenv("SANDBOX_ENDPOINT_DNS_SUFFIX") + "/api"
 	switch serviceName {
 	case Gin:
 		return "https://gin" + suffix

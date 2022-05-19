@@ -13,10 +13,12 @@ type Context struct {
 func Run(ctx Context) {
 	gin.SetMode(ctx.Mode)
 
-	router := gin.Default()
+	router := gin.New()
+
+	router.Use(gin.Recovery())
 	router.Use(cors.Default())
 
-	router.POST("/", NestedCallHandler)
+	router.POST("/api", NestedCallHandler)
 	router.NoRoute(BadRequest)
 
 	router.Run(":" + ctx.Port)
