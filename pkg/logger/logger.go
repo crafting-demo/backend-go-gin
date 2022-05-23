@@ -4,7 +4,7 @@ import (
 	"log"
 )
 
-func WriteContext(request []byte, response []byte, errors []error, receivedAt string) {
+func LogContext(request []byte, response []byte, errors []error, receivedAt string) {
 	log.SetFlags(0)
 	log.Println("Started POST \"/api\" at " + receivedAt)
 	log.Println("  Request: " + string(request))

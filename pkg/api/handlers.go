@@ -20,7 +20,7 @@ func NestedCallHandler(c *gin.Context) {
 
 	var message Message
 	if err := c.ShouldBind(&message); err != nil {
-		logger.WriteContext(nil, nil, append(errors, err), receivedAt)
+		logger.LogContext(nil, nil, append(errors, err), receivedAt)
 		InternalServerError(c)
 		return
 	}
@@ -73,11 +73,7 @@ func NestedCallHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, message)
 
 	response, _ := json.Marshal(message)
-	logger.WriteContext(request, response, errors, receivedAt)
-
-	if message.Meta.Caller == React {
-		enqueueMessage(React, message)
-	}
+	logger.LogContext(request, response, errors, receivedAt)
 }
 
 func serviceCall(payload Payload) ([]byte, error) {
@@ -126,7 +122,7 @@ func serviceEndpoint(serviceName string) string {
 	return "unknown"
 }
 
-func enqueueMessage(topic string, message Message) error {
+func EnqueueMessage(topic string, message Message) error {
 	msg, err := json.Marshal(message)
 	if err != nil {
 		return err
