@@ -74,6 +74,10 @@ func NestedCallHandler(c *gin.Context) {
 
 	response, _ := json.Marshal(message)
 	logger.LogContext(request, response, errors, receivedAt)
+
+	if err := enqueueMessage(message.Meta.Caller, message); err != nil {
+		logger.Write("enqueueMessage", "failed to queue response message", err)
+	}
 }
 
 func serviceCall(payload Payload) ([]byte, error) {
@@ -122,7 +126,7 @@ func serviceEndpoint(serviceName string) string {
 	return "unknown"
 }
 
-func EnqueueMessage(topic string, message Message) error {
+func enqueueMessage(topic string, message Message) error {
 	msg, err := json.Marshal(message)
 	if err != nil {
 		return err
