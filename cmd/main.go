@@ -16,5 +16,6 @@ func main() {
 		log.Fatal("GIN_SERVICE_PORT must be set")
 	}
 
-	api.Run(ctx)
+	go api.KafkaRun()
+	api.GinRun(ctx)
 }

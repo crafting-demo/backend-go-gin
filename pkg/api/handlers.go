@@ -13,21 +13,47 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// NestedCallHandler handles a "nested call" API.
-func NestedCallHandler(c *gin.Context) {
+func HttpHandler(c *gin.Context) {
 	// logger.Write("Test Test Crafting")
 
 	receivedAt := currentTime()
-	var errors []error
 
 	var message Message
 	if err := c.ShouldBind(&message); err != nil {
-		logger.LogContext(nil, nil, append(errors, err), receivedAt)
+		logger.LogContext(nil, nil, []error{err}, receivedAt, "HTTP")
 		InternalServerError(c)
 		return
 	}
 
 	request, _ := json.Marshal(message)
+
+	msg, errors := NestedCallHandler(message)
+
+	c.JSON(http.StatusOK, msg)
+
+	response, _ := json.Marshal(msg)
+	logger.LogContext(request, response, errors, receivedAt, "HTTP")
+}
+
+func KafkaHandler(message Message) {
+	// logger.Write("Test Test Crafting")
+
+	receivedAt := currentTime()
+	request, _ := json.Marshal(message)
+
+	msg, errors := NestedCallHandler(message)
+
+	if err := enqueueMessage(msg.Meta.Caller, msg); err != nil {
+		logger.Writef("enqueueMessage", "failed to queue response message", err)
+	}
+
+	response, _ := json.Marshal(msg)
+	logger.LogContext(request, response, errors, receivedAt, "KAFKA")
+}
+
+// NestedCallHandler handles a "nested call" API.
+func NestedCallHandler(message Message) (Message, []error) {
+	var errors []error
 
 	for i, action := range message.Actions {
 		switch action.Action {
@@ -72,14 +98,7 @@ func NestedCallHandler(c *gin.Context) {
 
 	message.Meta.ReturnTime = currentTime()
 
-	c.JSON(http.StatusOK, message)
-
-	response, _ := json.Marshal(message)
-	logger.LogContext(request, response, errors, receivedAt)
-
-	if err := enqueueMessage(message.Meta.Caller, message); err != nil {
-		logger.Writef("enqueueMessage", "failed to queue response message", err)
-	}
+	return message, errors
 }
 
 func serviceCall(payload Payload) ([]byte, error) {
@@ -117,19 +136,19 @@ func serviceEndpoint(serviceName string) string {
 	switch serviceName {
 	case Gin:
 		host = os.Getenv("GIN_SERVICE_HOST")
-		port = os.Getenv("GIN_SERVICE_PORT_API")
+		port = os.Getenv("GIN_SERVICE_PORT")
 	case Express:
 		host = os.Getenv("EXPRESS_SERVICE_HOST")
-		port = os.Getenv("EXPRESS_SERVICE_PORT_API")
+		port = os.Getenv("EXPRESS_SERVICE_PORT")
 	case Rails:
 		host = os.Getenv("RAILS_SERVICE_HOST")
-		port = os.Getenv("RAILS_SERVICE_PORT_API")
+		port = os.Getenv("RAILS_SERVICE_PORT")
 	case Spring:
 		host = os.Getenv("SPRING_SERVICE_HOST")
-		port = os.Getenv("SPRING_SERVICE_PORT_API")
+		port = os.Getenv("SPRING_SERVICE_PORT")
 	case Django:
 		host = os.Getenv("DJANGO_SERVICE_HOST")
-		port = os.Getenv("DJANGO_SERVICE_PORT_API")
+		port = os.Getenv("DJANGO_SERVICE_PORT")
 	}
 	return "http://" + host + ":" + port + "/api"
 }
