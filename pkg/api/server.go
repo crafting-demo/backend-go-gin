@@ -32,7 +32,7 @@ func GinRun(ctx Context) {
 }
 
 func KafkaRun() {
-	consumer := kafka.Consumer{}
+	var consumer kafka.Consumer
 
 	conn, err := consumer.New()
 	if err != nil {

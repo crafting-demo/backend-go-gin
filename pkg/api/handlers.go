@@ -38,6 +38,7 @@ func KafkaHandler(message Message) {
 	// logger.Write("Test Test Crafting")
 
 	receivedAt := currentTime()
+
 	request, _ := json.Marshal(message)
 	msg, errors := NestedCallHandler(message)
 
