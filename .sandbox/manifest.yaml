@@ -5,4 +5,6 @@ hooks:
 daemons:
   go-gin:
     run:
-      cmd: bin/server
+      cmd: |
+        cs wait service kafka
+        bin/server
