@@ -20,7 +20,7 @@ func HttpHandler(c *gin.Context) {
 
 	var message Message
 	if err := c.ShouldBind(&message); err != nil {
-		logger.LogContext(nil, nil, []error{err}, receivedAt, "HTTP")
+		logger.LogContext(nil, nil, []error{err}, receivedAt, "API")
 		InternalServerError(c)
 		return
 	}
@@ -31,7 +31,7 @@ func HttpHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, msg)
 
 	response, _ := json.Marshal(msg)
-	logger.LogContext(request, response, errors, receivedAt, "HTTP")
+	logger.LogContext(request, response, errors, receivedAt, "API")
 }
 
 func KafkaHandler(message Message) {

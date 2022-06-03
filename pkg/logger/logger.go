@@ -4,12 +4,12 @@ import (
 	"log"
 )
 
-func LogContext(request []byte, response []byte, errors []error, receivedAt string, reqType string) {
+func LogContext(request []byte, response []byte, errors []error, receivedAt string, requestMode string) {
 	log.SetFlags(0)
-	if reqType == "HTTP" {
-		log.Println("Started POST (HTTP) request \"/api\" at " + receivedAt)
+	if requestMode == "API" {
+		log.Println("Started API (HTTP) request for POST \"/api\" at " + receivedAt)
 	}
-	if reqType == "KAFKA" {
+	if requestMode == "KAFKA" {
 		log.Println("Started KAFKA (TCP) request at " + receivedAt)
 	}
 	log.Println("  Request: " + string(request))
