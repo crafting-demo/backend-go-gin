@@ -26,13 +26,11 @@ func HttpHandler(c *gin.Context) {
 	}
 
 	request, _ := json.Marshal(message)
-
 	msg, errors := NestedCallHandler(message)
 
 	c.JSON(http.StatusOK, msg)
 
 	response, _ := json.Marshal(msg)
-
 	logger.LogContext(request, response, errors, receivedAt, "HTTP")
 }
 
@@ -40,9 +38,7 @@ func KafkaHandler(message Message) {
 	// logger.Write("Test Test Crafting")
 
 	receivedAt := currentTime()
-
 	request, _ := json.Marshal(message)
-
 	msg, errors := NestedCallHandler(message)
 
 	if err := enqueueMessage(msg.Meta.Caller, msg); err != nil {
@@ -50,7 +46,6 @@ func KafkaHandler(message Message) {
 	}
 
 	response, _ := json.Marshal(msg)
-
 	logger.LogContext(request, response, errors, receivedAt, "KAFKA")
 }
 
