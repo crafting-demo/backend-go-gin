@@ -15,6 +15,8 @@ import (
 
 // NestedCallHandler handles a "nested call" API.
 func NestedCallHandler(c *gin.Context) {
+	// logger.Write("Test Test Crafting")
+
 	receivedAt := currentTime()
 	var errors []error
 
@@ -76,7 +78,7 @@ func NestedCallHandler(c *gin.Context) {
 	logger.LogContext(request, response, errors, receivedAt)
 
 	if err := enqueueMessage(message.Meta.Caller, message); err != nil {
-		logger.Write("enqueueMessage", "failed to queue response message", err)
+		logger.Writef("enqueueMessage", "failed to queue response message", err)
 	}
 }
 
@@ -110,20 +112,26 @@ func serviceCall(payload Payload) ([]byte, error) {
 }
 
 func serviceEndpoint(serviceName string) string {
-	suffix := os.Getenv("SANDBOX_ENDPOINT_DNS_SUFFIX") + "/api"
+	host := ""
+	port := ""
 	switch serviceName {
 	case Gin:
-		return "https://gin" + suffix
+		host = os.Getenv("GIN_SERVICE_HOST")
+		port = os.Getenv("GIN_SERVICE_PORT_API")
 	case Express:
-		return "https://express" + suffix
+		host = os.Getenv("EXPRESS_SERVICE_HOST")
+		port = os.Getenv("EXPRESS_SERVICE_PORT_API")
 	case Rails:
-		return "https://rails" + suffix
+		host = os.Getenv("RAILS_SERVICE_HOST")
+		port = os.Getenv("RAILS_SERVICE_PORT_API")
 	case Spring:
-		return "https://spring" + suffix
+		host = os.Getenv("SPRING_SERVICE_HOST")
+		port = os.Getenv("SPRING_SERVICE_PORT_API")
 	case Django:
-		return "https://django" + suffix
+		host = os.Getenv("DJANGO_SERVICE_HOST")
+		port = os.Getenv("DJANGO_SERVICE_PORT_API")
 	}
-	return "unknown"
+	return "http://" + host + ":" + port + "/api"
 }
 
 func enqueueMessage(topic string, message Message) error {
