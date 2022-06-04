@@ -1,10 +1,8 @@
 hooks:
   build:
-    cmd: go build -o bin/server cmd/main.go
+    cmd: scripts/go-server.sh
 
 daemons:
   go-gin:
     run:
-      cmd: |
-        cs wait service kafka
-        bin/server
+      cmd: scripts/run-server.sh
