@@ -13,19 +13,46 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// NestedCallHandler handles a "nested call" API.
-func NestedCallHandler(c *gin.Context) {
+func HttpHandler(c *gin.Context) {
+	// logger.Write("Test Test Crafting")
+
 	receivedAt := currentTime()
-	var errors []error
 
 	var message Message
 	if err := c.ShouldBind(&message); err != nil {
-		logger.LogContext(nil, nil, append(errors, err), receivedAt)
+		logger.LogContext(nil, nil, []error{err}, receivedAt, "API")
 		InternalServerError(c)
 		return
 	}
 
 	request, _ := json.Marshal(message)
+	msg, errors := NestedCallHandler(message)
+
+	c.JSON(http.StatusOK, msg)
+
+	response, _ := json.Marshal(msg)
+	logger.LogContext(request, response, errors, receivedAt, "API")
+}
+
+func KafkaHandler(message Message) {
+	// logger.Write("Test Test Crafting")
+
+	receivedAt := currentTime()
+
+	request, _ := json.Marshal(message)
+	msg, errors := NestedCallHandler(message)
+
+	if err := enqueueMessage(msg.Meta.Caller, msg); err != nil {
+		errors = append(errors, err)
+	}
+
+	response, _ := json.Marshal(msg)
+	logger.LogContext(request, response, errors, receivedAt, "KAFKA")
+}
+
+// NestedCallHandler handles a "nested call" API.
+func NestedCallHandler(message Message) (Message, []error) {
+	var errors []error
 
 	for i, action := range message.Actions {
 		switch action.Action {
@@ -70,10 +97,7 @@ func NestedCallHandler(c *gin.Context) {
 
 	message.Meta.ReturnTime = currentTime()
 
-	c.JSON(http.StatusOK, message)
-
-	response, _ := json.Marshal(message)
-	logger.LogContext(request, response, errors, receivedAt)
+	return message, errors
 }
 
 func serviceCall(payload Payload) ([]byte, error) {
@@ -106,23 +130,29 @@ func serviceCall(payload Payload) ([]byte, error) {
 }
 
 func serviceEndpoint(serviceName string) string {
-	suffix := os.Getenv("SANDBOX_ENDPOINT_DNS_SUFFIX") + "/api"
+	host := ""
+	port := ""
 	switch serviceName {
 	case Gin:
-		return "https://gin" + suffix
+		host = os.Getenv("GIN_SERVICE_HOST")
+		port = os.Getenv("GIN_SERVICE_PORT")
 	case Express:
-		return "https://express" + suffix
+		host = os.Getenv("EXPRESS_SERVICE_HOST")
+		port = os.Getenv("EXPRESS_SERVICE_PORT")
 	case Rails:
-		return "https://rails" + suffix
+		host = os.Getenv("RAILS_SERVICE_HOST")
+		port = os.Getenv("RAILS_SERVICE_PORT")
 	case Spring:
-		return "https://spring" + suffix
+		host = os.Getenv("SPRING_SERVICE_HOST")
+		port = os.Getenv("SPRING_SERVICE_PORT")
 	case Django:
-		return "https://django" + suffix
+		host = os.Getenv("DJANGO_SERVICE_HOST")
+		port = os.Getenv("DJANGO_SERVICE_PORT")
 	}
-	return "unknown"
+	return "http://" + host + ":" + port + "/api"
 }
 
-func EnqueueMessage(topic string, message Message) error {
+func enqueueMessage(topic string, message Message) error {
 	msg, err := json.Marshal(message)
 	if err != nil {
 		return err
