@@ -36,7 +36,7 @@ func KafkaRun() {
 
 	conn, err := consumer.New()
 	if err != nil {
-		logger.Writef("KafkaRun", "failed to create new consumer", err)
+		go KafkaRun()
 		return
 	}
 	defer conn.Close()
