@@ -42,7 +42,7 @@ func KafkaRun() {
 	}
 	defer conn.Close()
 
-	logger.Write("Connection established. Ready for requests!")
+	logger.Write("Connection established. Ready for requests!\n\n")
 
 	partitionConsumer, err := conn.ConsumePartition(Gin, 0, sarama.OffsetNewest)
 	if err != nil {
