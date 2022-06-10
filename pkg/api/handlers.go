@@ -130,8 +130,8 @@ func serviceCall(payload Payload) ([]byte, error) {
 }
 
 func serviceEndpoint(serviceName string) string {
-	host := ""
-	port := ""
+	var host string
+	var port string
 	switch serviceName {
 	case Gin:
 		host = os.Getenv("GIN_SERVICE_HOST")
