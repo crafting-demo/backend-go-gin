@@ -36,10 +36,13 @@ func KafkaRun() {
 
 	conn, err := consumer.New()
 	if err != nil {
+		logger.Write("Connecting to kafka...")
 		go KafkaRun()
 		return
 	}
 	defer conn.Close()
+
+	logger.Write("Connection established. Ready for requests!")
 
 	partitionConsumer, err := conn.ConsumePartition(Gin, 0, sarama.OffsetNewest)
 	if err != nil {
