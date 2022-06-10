@@ -1,6 +1,4 @@
 hooks:
-  post-checkout:
-    cmd:
   build:
     cmd: go build -o bin/server cmd/main.go
 
