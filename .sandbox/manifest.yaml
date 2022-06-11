@@ -5,4 +5,4 @@ hooks:
 daemons:
   go-gin:
     run:
-      cmd: bin/server
+      cmd: ./scripts/go-server.sh

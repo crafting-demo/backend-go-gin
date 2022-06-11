@@ -14,7 +14,7 @@ import (
 )
 
 func HttpHandler(c *gin.Context) {
-	// logger.Write("Test Test Crafting")
+	// log.Println("Test Test Crafting")
 
 	receivedAt := currentTime()
 
@@ -35,7 +35,7 @@ func HttpHandler(c *gin.Context) {
 }
 
 func KafkaHandler(message Message) {
-	// logger.Write("Test Test Crafting")
+	// log.Println("Test Test Crafting")
 
 	receivedAt := currentTime()
 
@@ -130,8 +130,8 @@ func serviceCall(payload Payload) ([]byte, error) {
 }
 
 func serviceEndpoint(serviceName string) string {
-	host := ""
-	port := ""
+	var host string
+	var port string
 	switch serviceName {
 	case Gin:
 		host = os.Getenv("GIN_SERVICE_HOST")
