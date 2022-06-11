@@ -14,7 +14,7 @@ import (
 )
 
 func HttpHandler(c *gin.Context) {
-	// logger.Write("Test Test Crafting")
+	// log.Println("Test Test Crafting")
 
 	receivedAt := currentTime()
 
@@ -35,7 +35,7 @@ func HttpHandler(c *gin.Context) {
 }
 
 func KafkaHandler(message Message) {
-	// logger.Write("Test Test Crafting")
+	// log.Println("Test Test Crafting")
 
 	receivedAt := currentTime()
 
