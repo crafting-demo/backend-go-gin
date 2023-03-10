@@ -2,8 +2,7 @@ package db
 
 // All dependencies.
 const (
-	MySQL   = "mysql"
-	MongoDB = "mongodb"
+	MySQL = "mysql"
 )
 
 // Shared config.

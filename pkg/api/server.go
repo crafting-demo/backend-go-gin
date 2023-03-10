@@ -44,7 +44,7 @@ func KafkaRun() {
 
 	logger.Write("Connection established. Ready for requests!\n\n")
 
-	partitionConsumer, err := conn.ConsumePartition(Gin, 0, sarama.OffsetNewest)
+	partitionConsumer, err := conn.ConsumePartition("backend-go-gin", 0, sarama.OffsetNewest)
 	if err != nil {
 		logger.Writef("KafkaRun", "failed to create partition consumer", err)
 	}
@@ -56,7 +56,7 @@ func KafkaRun() {
 	for {
 		select {
 		case msg := <-partitionConsumer.Messages():
-			var message Message
+			var message RequestMessage
 			if err := json.Unmarshal(msg.Value, &message); err != nil {
 				logger.Writef("KafkaRun", "failed to parse json encoded message", err)
 				continue
