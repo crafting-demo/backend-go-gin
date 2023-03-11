@@ -2,9 +2,7 @@ package db
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
-	"os"
 
 	// go mysql driver
 	_ "github.com/go-sql-driver/mysql"
@@ -43,14 +41,16 @@ func (c *ConfigMySQL) SetupConfig() error {
 
 	c.User = DBUser
 	c.Pass = DBPass
+	c.Host = "localhost"
+	c.Port = "3306"
 
-	if c.Host = os.Getenv("MYSQL_SERVICE_HOST"); c.Host == "" {
-		return errors.New("missing env MYSQL_SERVICE_HOST")
-	}
+	// if c.Host = os.Getenv("MYSQL_SERVICE_HOST"); c.Host == "" {
+	// 	return errors.New("missing env MYSQL_SERVICE_HOST")
+	// }
 
-	if c.Port = os.Getenv("MYSQL_SERVICE_PORT"); c.Port == "" {
-		return errors.New("missing env MYSQL_SERVICE_PORT")
-	}
+	// if c.Port = os.Getenv("MYSQL_SERVICE_PORT"); c.Port == "" {
+	// 	return errors.New("missing env MYSQL_SERVICE_PORT")
+	// }
 
 	return nil
 }

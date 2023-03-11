@@ -1,8 +1,10 @@
 hooks:
   build:
-    cmd: go build -o bin/server cmd/main.go
+    cmd: |
+      mkdir -p bin
+      go build -o bin/server cmd/main.go
 
 daemons:
   go-gin:
     run:
-      cmd: ./scripts/go-server.sh
+      cmd: bin/server
