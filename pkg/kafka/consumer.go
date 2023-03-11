@@ -1,8 +1,6 @@
 package kafka
 
 import (
-	"os"
-
 	"github.com/Shopify/sarama"
 )
 
@@ -13,7 +11,8 @@ type Consumer struct {
 // New returns a new kafka connection as a Consumer.
 func (c *Consumer) New() (sarama.Consumer, error) {
 	if len(c.Brokers) == 0 {
-		host, port := os.Getenv("KAFKA_SERVICE_HOST"), os.Getenv("KAFKA_SERVICE_PORT")
+		// host, port := os.Getenv("KAFKA_SERVICE_HOST"), os.Getenv("KAFKA_SERVICE_PORT")
+		host, port := "127.0.0.1", "9092"
 		c.Brokers = append(c.Brokers, host+":"+port)
 	}
 
